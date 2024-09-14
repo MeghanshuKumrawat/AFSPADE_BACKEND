@@ -1,0 +1,17 @@
+# env files
+env
+
+# pyc files
+*.pyc
+
+
+# data folder
+data
+restaurant_documents
+uploads
+
+migrations
+db.sqlite3
+
+templates
+static
