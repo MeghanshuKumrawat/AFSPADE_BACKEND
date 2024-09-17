@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
 
     'accounts',
     'main',
@@ -68,6 +69,7 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # CORS
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -96,6 +98,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'AFSPADE_BACKEND.wsgi.application'
 
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3030',
+    'http://localhost:3001',
+]
+
+CORS_ALLOW_HEADERS = ['*']
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3030',
+    'http://localhost:3001'
+]
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
