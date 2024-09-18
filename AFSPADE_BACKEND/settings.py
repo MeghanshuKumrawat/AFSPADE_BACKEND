@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
 
-    'accounts',
-    'main',
+    'accounts.apps.AccountsConfig',
+    'main.apps.MainConfig', 
 ]
 
 REST_FRAMEWORK = {
