@@ -10,7 +10,7 @@ data
 restaurant_documents
 uploads
 
-migrations
+# migrations
 db.sqlite3
 
 templates
