@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-rnft5uek6_ve+zbj&137^@g25akl@mtcx@ning&!x5m16^t(a0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['http://afspade-backend.onrender.com', '*']
 
 
 # Application definition
