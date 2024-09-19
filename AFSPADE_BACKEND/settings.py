@@ -164,6 +164,7 @@ USE_TZ = True
 
 # Set the URL for static files
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
 
 
 # Default primary key field type

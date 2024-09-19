@@ -17,7 +17,8 @@ COPY . /app/
 
 RUN python3 manage.py makemigrations
 RUN python3 manage.py migrate
-
+RUN python3 manage.py collectstatic
+RUN python3 manage.py create_admin
 
 # Run the Django server
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "AFSPADE_BACKEND.wsgi:application"]
