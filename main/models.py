@@ -38,16 +38,27 @@ class Question(models.Model):
     def __str__(self):
         return f"Question for {self.assignment.title}: {self.text[:50]}..."
 
-# class Submission(models.Model):
-#     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
-#     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='submissions')
-#     file = models.FileField(upload_to='submissions/', null=True, blank=True)
-#     code_text = models.TextField(null=True, blank=True)
-#     submitted_at = models.DateTimeField(auto_now_add=True)
-#     is_graded = models.BooleanField(default=False)
+class CourseEnrollment(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrollments')
+    enrolled_at = models.DateTimeField(auto_now_add=True)
 
-#     def __str__(self):
-#         return f"{self.student.username} - {self.assignment.title}"
+    def __str__(self):
+        return f"{self.student.username} enrolled in {self.course.name}"
+    
+class Submission(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='submissions')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='submissions')
+    code_text = models.TextField(null=True, blank=True)  # This will store the submitted code
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    is_final = models.BooleanField(default=False)  # Indicates if the submission is final
+    is_graded = models.BooleanField(default=False)
+    grade = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Optional grading
+    feedback = models.TextField(null=True, blank=True)  # Optional feedback for the submission
+
+    def __str__(self):
+        return f"{self.student.username} - {self.question.text[:50]}"
+
 
 # class Feedback(models.Model):
 #     submission = models.OneToOneField(Submission, on_delete=models.CASCADE, related_name='feedback')
@@ -59,10 +70,3 @@ class Question(models.Model):
 #     def __str__(self):
 #         return f"Feedback for {self.submission}"
 
-# class CourseEnrollment(models.Model):
-#     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
-#     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrollments')
-#     enrolled_at = models.DateTimeField(auto_now_add=True)
-
-#     def __str__(self):
-#         return f"{self.student.username} enrolled in {self.course.name}"
