@@ -34,3 +34,22 @@ class SignupSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+    
+class UserReadSerializer(serializers.ModelSerializer):
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'phone', 'matriculation_number', 'level', 'semester', 'image', 'role']
+
+    def get_role(self, obj):
+        if obj.is_teacher:
+            return 'teacher'
+        elif obj.is_student:
+            return 'student'
+        return 'unknown'
+
+class UserWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'phone', 'matriculation_number', 'level', 'semester', 'image']
