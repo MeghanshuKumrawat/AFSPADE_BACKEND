@@ -139,15 +139,24 @@ class QuestionViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     def get_queryset(self):
-        # Filter to only return questions for assignments in courses taught by the current teacher
-        queryset = Question.objects.filter(assignment__course__teacher=self.request.user)
+        queryset = Question.objects.none()  # Start with an empty queryset as a default
+        print(self.request.user.is_student , '------------')
+
+        if self.request.user.is_teacher:
+            # Teachers can see all questions for assignments in courses they teach
+            queryset = Question.objects.filter(assignment__course__teacher=self.request.user)
         
-        # Check for assignment_id in the query parameters
+        elif self.request.user.is_student:
+            # Students can see only questions from assignments in their courses
+            queryset = Question.objects.filter(assignment__course__enrollments__student=self.request.user)
+
+        # Optional: If assignment_id is provided, filter by it
         assignment_id = self.request.query_params.get('assignment_id')
         if assignment_id:
             queryset = queryset.filter(assignment_id=assignment_id)
-        
+
         return queryset
+
     
 class CourseEnrollmentViewSet(viewsets.ModelViewSet):
     queryset = CourseEnrollment.objects.all()
