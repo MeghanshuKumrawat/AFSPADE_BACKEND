@@ -16,12 +16,27 @@ class CourseWriteSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'teacher': {'read_only': True}
         }
+
 class QuestionReadSerializer(serializers.ModelSerializer):
     assignment_title = serializers.CharField(source='assignment.title', read_only=True)
+    submission = serializers.SerializerMethodField()
 
     class Meta:
         model = Question
-        fields = ['id', 'assignment', 'assignment_title', 'text', 'language']
+        fields = ['id', 'assignment', 'assignment_title', 'text', 'language', 'submission']
+
+    def get_submission(self, obj):
+        # Get the current user from the context
+        user = self.context['request'].user
+        print(user)
+        
+        # Retrieve the submission for the current user for the given question
+        try:
+            submission = Submission.objects.get(question=obj, student=user)
+            return submission.id
+        except Submission.DoesNotExist:
+            return None
+
 
 class QuestionWriteSerializer(serializers.ModelSerializer):
     class Meta:
