@@ -10,6 +10,7 @@ class Course(models.Model):
     level = models.CharField(max_length=50, choices=LevelType.choices, default=LevelType.LEVEL_100)
     semester = models.CharField(max_length=50, choices=SemesterType.choices, default=SemesterType.SEMESTER_1)
     thumbnail = models.ImageField(upload_to='static/courses', default='static/courses/default.png')
+    is_active = models.BooleanField(default=False)
 
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='courses')
 

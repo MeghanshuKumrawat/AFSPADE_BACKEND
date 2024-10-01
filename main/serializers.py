@@ -6,12 +6,12 @@ class CourseReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'code', 'name', 'description', 'level', 'semester', 'thumbnail', 'teacher_name']
+        fields = ['id', 'code', 'name', 'description', 'level', 'semester', 'thumbnail', 'is_active', 'teacher_name']
 
 class CourseWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['code', 'name', 'description', 'level', 'semester', 'thumbnail']
+        fields = ['code', 'name', 'description', 'level', 'semester', 'thumbnail', 'is_active']
         # The 'teacher' field should not be required in the input as it will be set automatically
         extra_kwargs = {
             'teacher': {'read_only': True}
@@ -67,10 +67,11 @@ class AssignmentWriteSerializer(serializers.ModelSerializer):
 class CourseEnrollmentReadSerializer(serializers.ModelSerializer):
     course = CourseReadSerializer(read_only=True)  # Nested serializer for course details
     student_name = serializers.CharField(source='student.username', read_only=True)
+    student_id = serializers.CharField(source='student.id', read_only=True)
 
     class Meta:
         model = CourseEnrollment
-        fields = ['id', 'course', 'student_name', 'enrolled_at']
+        fields = ['id', 'course', 'student_id', 'student_name', 'enrolled_at']
 
 class CourseEnrollmentWriteSerializer(serializers.ModelSerializer):
     class Meta:

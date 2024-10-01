@@ -1,4 +1,6 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from accounts.models import User
 from main.models import Course, Assignment, Question, CourseEnrollment, Submission
 from main.serializers import (CourseReadSerializer, CourseWriteSerializer, AssignmentReadSerializer, AssignmentWriteSerializer, QuestionReadSerializer, QuestionWriteSerializer, CourseEnrollmentWriteSerializer, CourseEnrollmentReadSerializer, SubmissionReadSerializer, SubmissionWriteSerializer, AssignmentWithSubmissionsSerializer)
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +10,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, Avg
+from django.utils import timezone
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
@@ -40,6 +43,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         if self.request.user.is_teacher:
             return Course.objects.filter(teacher=self.request.user)
         if self.request.user.is_student:
+            return Course.objects.all()
             if self.request.query_params.get("search"):
                 query = self.request.query_params.get("search")
                 return Course.objects.filter(level=self.request.user.level, semester=self.request.user.semester).filter(Q(name__icontains=query) | Q(code__contains=query)).distinct()
@@ -188,6 +192,9 @@ class CourseEnrollmentViewSet(viewsets.ModelViewSet):
         # Return the courses the student has enrolled in
         if self.request.user.is_student:
             return CourseEnrollment.objects.filter(student=self.request.user)
+        elif self.request.user.is_teacher:
+            print(CourseEnrollment.objects.filter(course__teacher=self.request.user).order_by('id'))
+            return CourseEnrollment.objects.filter(course__teacher=self.request.user).order_by('id')
         return CourseEnrollment.objects.none()
     
 
@@ -279,3 +286,61 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         submissions.update(is_final=True)
 
         return Response({"detail": "Submission has been marked as final. No further changes allowed."}, status=status.HTTP_200_OK)
+
+
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        payload = {}
+
+        # If the logged-in user is a student
+        if request.user.is_student:
+            # Enrolled courses for the student
+            enrolled_courses = Course.objects.filter(enrollments__student=request.user).distinct()
+
+            # Completed courses where all assignments are submitted
+            completed_courses = Course.objects.filter(
+                enrollments__student=request.user,
+                assignments__questions__submissions__student=request.user,
+                assignments__questions__submissions__is_final=True
+            ).distinct()
+
+
+            # Calculate average rating across all submitted assignments
+            average_rating = Submission.objects.filter(
+                student=request.user,
+                is_final=True,
+                grade__isnull=False
+            ).aggregate(Avg('grade'))['grade__avg']
+
+            payload['enrolled_courses'] = enrolled_courses.count()
+            payload['completed_courses'] = completed_courses.count()
+            payload['average_rating'] = average_rating if average_rating else 0
+
+        # If the logged-in user is a teacher
+        elif request.user.is_teacher:
+            # Active courses (courses that have assignments with deadlines in the future)
+            active_courses = Course.objects.filter(
+                teacher=request.user,
+                assignments__deadline__gt=timezone.now()
+            ).distinct()
+
+            # Total courses taught by the teacher
+            total_courses = Course.objects.filter(teacher=request.user).count()
+
+            # Total unique students enrolled in the teacher's courses
+            total_students = User.objects.filter(
+                is_student=True,
+                enrollments__course__teacher=request.user
+            ).distinct().count()
+
+            payload['active_courses'] = active_courses.count()
+            payload['total_courses'] = total_courses
+            payload['total_students'] = total_students
+
+        return Response(payload)
+
+
+class View(APIView):
+    permission_classes = [IsAuthenticated]

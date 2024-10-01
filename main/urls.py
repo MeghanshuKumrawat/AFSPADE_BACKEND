@@ -1,5 +1,6 @@
 from rest_framework.routers import DefaultRouter
-from .views import CourseViewSet, AssignmentViewSet, QuestionViewSet, CourseEnrollmentViewSet, SubmissionViewSet
+from django.urls import path
+from .views import CourseViewSet, AssignmentViewSet, QuestionViewSet, CourseEnrollmentViewSet, SubmissionViewSet, DashboardView
 
 router = DefaultRouter(trailing_slash=False)
 router.register(r'courses', CourseViewSet, basename='course')
@@ -10,4 +11,6 @@ router.register(r'submissions', SubmissionViewSet, basename='submission')
 
 urlpatterns = [
     # Other paths
+    path('dashboard', DashboardView.as_view(), name='dashboard'),
+
 ] + router.urls
