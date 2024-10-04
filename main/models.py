@@ -21,6 +21,7 @@ class Assignment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
     title = models.CharField(max_length=100)
     description = models.TextField()
+    file = models.FileField(upload_to='assignments/', null=True, blank=True)
     deadline = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -31,13 +32,13 @@ class LanguageType(models.TextChoices):
     PYTHON = 'Python', _('Python')
     JAVA = 'Java', _('Java')
 
-class Question(models.Model):
-    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='questions')
-    text = models.TextField()
-    language = models.CharField(max_length=10, choices=LanguageType.choices, default=LanguageType.PYTHON)
+# class Question(models.Model):
+#     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='questions')
+#     text = models.TextField()
+#     language = models.CharField(max_length=10, choices=LanguageType.choices, default=LanguageType.PYTHON)
 
-    def __str__(self):
-        return f"Question for {self.assignment.title}: {self.text[:50]}..."
+#     def __str__(self):
+#         return f"Question for {self.assignment.title}: {self.text[:50]}..."
 
 class CourseEnrollment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
@@ -48,11 +49,11 @@ class CourseEnrollment(models.Model):
         return f"{self.student.username} enrolled in {self.course.name}"
     
 class Submission(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='submissions')
+    assignment = models.ForeignKey(Assignment, on_delete=models.SET_NULL, related_name='submissions', null=True)
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='submissions')
     code_text = models.TextField(null=True, blank=True)  # This will store the submitted code
+    file = models.FileField(upload_to='submissions/', null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
-    is_final = models.BooleanField(default=False)  # Indicates if the submission is final
     is_graded = models.BooleanField(default=False)
     grade = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Optional grading
     feedback = models.TextField(null=True, blank=True)  # Optional feedback for the submission
