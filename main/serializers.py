@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Assignment, Question, CourseEnrollment, Submission
+from .models import Course, Assignment, CourseEnrollment, Submission
 
 class CourseReadSerializer(serializers.ModelSerializer):
     teacher_name = serializers.CharField(source='teacher.username', read_only=True)
@@ -17,48 +17,48 @@ class CourseWriteSerializer(serializers.ModelSerializer):
             'teacher': {'read_only': True}
         }
 
-class QuestionReadSerializer(serializers.ModelSerializer):
-    assignment_title = serializers.CharField(source='assignment.title', read_only=True)
-    submission = serializers.SerializerMethodField()
+# class QuestionReadSerializer(serializers.ModelSerializer):
+#     assignment_title = serializers.CharField(source='assignment.title', read_only=True)
+#     submission = serializers.SerializerMethodField()
 
-    class Meta:
-        model = Question
-        fields = ['id', 'assignment', 'assignment_title', 'text', 'language', 'submission']
+#     class Meta:
+#         model = Question
+#         fields = ['id', 'assignment', 'assignment_title', 'text', 'language', 'submission']
 
-    def get_submission(self, obj):
-        # Get the current user from the context
-        user = self.context['request'].user
-        print(user)
+#     def get_submission(self, obj):
+#         # Get the current user from the context
+#         user = self.context['request'].user
+#         print(user)
         
-        # Retrieve the submission for the current user for the given question
-        try:
-            submission = Submission.objects.get(question=obj, student=user)
-            return submission.id
-        except Submission.DoesNotExist:
-            return None
+#         # Retrieve the submission for the current user for the given question
+#         try:
+#             submission = Submission.objects.get(question=obj, student=user)
+#             return submission.id
+#         except Submission.DoesNotExist:
+#             return None
 
 
-class QuestionWriteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Question
-        fields = ['assignment', 'text', 'language']
+# class QuestionWriteSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Question
+#         fields = ['assignment', 'text', 'language']
 
-        extra_kwargs = {
-            'assignment': {'read_only': True}
-        }
+#         extra_kwargs = {
+#             'assignment': {'read_only': True}
+#         }
 
 class AssignmentReadSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source='course.name', read_only=True)
-    questions = QuestionReadSerializer(many=True, read_only=True)
+    # questions = QuestionReadSerializer(many=True, read_only=True)
 
     class Meta:
         model = Assignment
-        fields = ['id', 'course', 'course_name', 'title', 'description', 'deadline', 'created_at', 'questions']
+        fields = ['id', 'course', 'course_name', 'title', 'description', 'file', 'deadline', 'created_at']
 
 class AssignmentWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assignment
-        fields = ['course', 'title', 'description', 'deadline']
+        fields = ['course', 'title', 'description', 'deadline', 'file']
 
         extra_kwargs = {
             'course': {'read_only': True}
@@ -84,18 +84,18 @@ class SubmissionReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Submission
-        fields = ['id', 'question_text', 'code_text', 'submitted_at', 'is_graded', 'is_final', 'grade', 'feedback']
+        fields = ['id', 'question_text', 'code_text', 'submitted_at', 'is_graded', 'grade', 'feedback']
 
 class SubmissionWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
-        fields = ['question', 'code_text']  # Exclude 'student', will be set in the view
+        fields = ['question', 'code_text', 'file']  # Exclude 'student', will be set in the view
         read_only_fields = ['submitted_at', 'is_graded', 'is_final', 'grade', 'feedback']
 
 class AssignmentWithSubmissionsSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source='course.name', read_only=True)
     course_code = serializers.CharField(source='course.code', read_only=True)
-    submissions = serializers.SerializerMethodField()
+    submission = serializers.SerializerMethodField()
 
     class Meta:
         model = Assignment
@@ -103,6 +103,8 @@ class AssignmentWithSubmissionsSerializer(serializers.ModelSerializer):
 
     def get_submissions(self, obj):
         # Get all submissions related to the assignment via the question relationship
-        submissions = Submission.objects.filter(question__assignment=obj)
+        submissions = Submission.objects.filter(assignment=obj)
         return SubmissionReadSerializer(submissions, many=True).data
 
+
+    submissions = serializers.SerializerMethodField()

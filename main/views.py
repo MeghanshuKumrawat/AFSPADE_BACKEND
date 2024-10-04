@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from accounts.models import User
-from main.models import Course, Assignment, Question, CourseEnrollment, Submission
-from main.serializers import (CourseReadSerializer, CourseWriteSerializer, AssignmentReadSerializer, AssignmentWriteSerializer, QuestionReadSerializer, QuestionWriteSerializer, CourseEnrollmentWriteSerializer, CourseEnrollmentReadSerializer, SubmissionReadSerializer, SubmissionWriteSerializer, AssignmentWithSubmissionsSerializer)
+from main.models import Course, Assignment, CourseEnrollment, Submission
+from main.serializers import (CourseReadSerializer, CourseWriteSerializer, AssignmentReadSerializer, AssignmentWriteSerializer, CourseEnrollmentWriteSerializer, CourseEnrollmentReadSerializer, SubmissionReadSerializer, SubmissionWriteSerializer, AssignmentWithSubmissionsSerializer)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.exceptions import PermissionDenied
@@ -43,7 +43,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         if self.request.user.is_teacher:
             return Course.objects.filter(teacher=self.request.user)
         if self.request.user.is_student:
-            return Course.objects.all()
+            # return Course.objects.all()
             if self.request.query_params.get("search"):
                 query = self.request.query_params.get("search")
                 return Course.objects.filter(level=self.request.user.level, semester=self.request.user.semester).filter(Q(name__icontains=query) | Q(code__contains=query)).distinct()
@@ -104,62 +104,62 @@ class AssignmentViewSet(viewsets.ModelViewSet):
         
         return queryset
     
-class QuestionViewSet(viewsets.ModelViewSet):
-    queryset = Question.objects.all()
-    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
-    pagination_class = PageNumberPagination
+# class QuestionViewSet(viewsets.ModelViewSet):
+#     queryset = Question.objects.all()
+#     permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
+#     pagination_class = PageNumberPagination
 
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return QuestionWriteSerializer
-        return QuestionReadSerializer
+#     def get_serializer_class(self):
+#         if self.action in ['create', 'update', 'partial_update']:
+#             return QuestionWriteSerializer
+#         return QuestionReadSerializer
 
-    def perform_create(self, serializer):
-        # Check if the user is a teacher
-        if not self.request.user.is_teacher:
-            raise PermissionDenied("Only teachers can create questions.")
+#     def perform_create(self, serializer):
+#         # Check if the user is a teacher
+#         if not self.request.user.is_teacher:
+#             raise PermissionDenied("Only teachers can create questions.")
         
-        # Get the assignment instance from the request data
-        assignment_id = self.request.data.get('assignment_id')
-        assignment = get_object_or_404(Assignment, id=assignment_id)
+#         # Get the assignment instance from the request data
+#         assignment_id = self.request.data.get('assignment_id')
+#         assignment = get_object_or_404(Assignment, id=assignment_id)
 
-        # Check if the current user is the teacher of the course related to the assignment
-        if assignment.course.teacher != self.request.user:
-            raise PermissionDenied("You can only create questions for assignments in courses you teach.")
+#         # Check if the current user is the teacher of the course related to the assignment
+#         if assignment.course.teacher != self.request.user:
+#             raise PermissionDenied("You can only create questions for assignments in courses you teach.")
         
-        # Save the question with the assignment
-        serializer.save(assignment=assignment)
+#         # Save the question with the assignment
+#         serializer.save(assignment=assignment)
 
-    def perform_update(self, serializer):
-        # Check if the user is a teacher
-        if not self.request.user.is_teacher:
-            raise PermissionDenied("Only teachers can update questions.")
+#     def perform_update(self, serializer):
+#         # Check if the user is a teacher
+#         if not self.request.user.is_teacher:
+#             raise PermissionDenied("Only teachers can update questions.")
         
-        # Check if the current user is the teacher for the course related to the assignment
-        if serializer.instance.assignment.course.teacher != self.request.user:
-            raise PermissionDenied("You can only update questions for assignments in courses you teach.")
+#         # Check if the current user is the teacher for the course related to the assignment
+#         if serializer.instance.assignment.course.teacher != self.request.user:
+#             raise PermissionDenied("You can only update questions for assignments in courses you teach.")
         
-        # Save the question
-        serializer.save()
+#         # Save the question
+#         serializer.save()
 
-    def get_queryset(self):
-        queryset = Question.objects.none()  # Start with an empty queryset as a default
-        print(self.request.user.is_student , '------------')
+#     def get_queryset(self):
+#         queryset = Question.objects.none()  # Start with an empty queryset as a default
+#         print(self.request.user.is_student , '------------')
 
-        if self.request.user.is_teacher:
-            # Teachers can see all questions for assignments in courses they teach
-            queryset = Question.objects.filter(assignment__course__teacher=self.request.user)
+#         if self.request.user.is_teacher:
+#             # Teachers can see all questions for assignments in courses they teach
+#             queryset = Question.objects.filter(assignment__course__teacher=self.request.user)
         
-        elif self.request.user.is_student:
-            # Students can see only questions from assignments in their courses
-            queryset = Question.objects.filter(assignment__course__enrollments__student=self.request.user)
+#         elif self.request.user.is_student:
+#             # Students can see only questions from assignments in their courses
+#             queryset = Question.objects.filter(assignment__course__enrollments__student=self.request.user)
 
-        # Optional: If assignment_id is provided, filter by it
-        assignment_id = self.request.query_params.get('assignment_id')
-        if assignment_id:
-            queryset = queryset.filter(assignment_id=assignment_id)
+#         # Optional: If assignment_id is provided, filter by it
+#         assignment_id = self.request.query_params.get('assignment_id')
+#         if assignment_id:
+#             queryset = queryset.filter(assignment_id=assignment_id)
 
-        return queryset
+#         return queryset
 
     
 class CourseEnrollmentViewSet(viewsets.ModelViewSet):
@@ -193,7 +193,6 @@ class CourseEnrollmentViewSet(viewsets.ModelViewSet):
         if self.request.user.is_student:
             return CourseEnrollment.objects.filter(student=self.request.user)
         elif self.request.user.is_teacher:
-            print(CourseEnrollment.objects.filter(course__teacher=self.request.user).order_by('id'))
             return CourseEnrollment.objects.filter(course__teacher=self.request.user).order_by('id')
         return CourseEnrollment.objects.none()
     
@@ -209,7 +208,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         # Ensure the student hasn't already submitted an answer for this question
-        if Submission.objects.filter(question=serializer.validated_data['question'], student=self.request.user).exists():
+        if Submission.objects.filter(assignment=serializer.validated_data['assignment'], student=self.request.user).exists():
             raise PermissionDenied("You have already submitted an answer for this question.")
         
         # Save the submission with the current student
@@ -223,16 +222,15 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         if submission.is_graded:
             raise PermissionDenied("You cannot update a submission that has already been graded.")
         
-        if submission.is_final and self.request.user.is_student:
-            raise PermissionDenied("You cannot update a submission after it has been finalized.")
+        # if submission.is_final and self.request.user.is_student:
+        #     raise PermissionDenied("You cannot update a submission after it has been finalized.")
 
-        if not submission.is_final and self.request.user.is_teacher:
-            raise PermissionDenied("You can only update a submission after the student has finalized it.")
+        # if not submission.is_final and self.request.user.is_teacher:
+        #     raise PermissionDenied("You can only update a submission after the student has finalized it.")
 
         
         # Optionally, prevent update after a certain period of time or after a deadline
         # Example: check assignment deadline or time of submission
-        print(submission.submitted_at , submission.question.assignment.deadline)
         if submission.submitted_at and submission.submitted_at > submission.question.assignment.deadline:
             raise PermissionDenied("You cannot update a submission after the assignment deadline.")
 
@@ -244,7 +242,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             return Submission.objects.filter(student=self.request.user)
         # Teachers can view submissions related to their assignments
         elif self.request.user.is_teacher:
-            return Submission.objects.filter(question__assignment__course__teacher=self.request.user)
+            return Submission.objects.filter(assignment__course__teacher=self.request.user)
         return Submission.objects.none()
     
     def list(self, request, *args, **kwargs):
@@ -252,7 +250,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
 
         if user.is_student:
             # Get distinct assignments where the current student has submitted work
-            assignments = Assignment.objects.filter(questions__submissions__student=user).distinct()
+            assignments = Assignment.objects.filter(submissions__student=user).distinct()
         elif user.is_teacher:
             # Get distinct assignments where the teacher is the owner of the course
             assignments = Assignment.objects.filter(course__teacher=user).distinct()
@@ -265,27 +263,27 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         # Return the custom response, which is grouped by assignment
         return Response(serializer.data)
     
-    @action(detail=False, methods=['post'], url_path='final-submit')
-    def final_submit(self, request, *args, **kwargs):
-        """
-        Mark all submissions for an assignment as final, preventing further changes.
-        """
-        student = request.user
-        assignment_id = request.data.get('assignment_id')
+    # @action(detail=False, methods=['post'], url_path='final-submit')
+    # def final_submit(self, request, *args, **kwargs):
+    #     """
+    #     Mark all submissions for an assignment as final, preventing further changes.
+    #     """
+    #     student = request.user
+    #     assignment_id = request.data.get('assignment_id')
 
-        # Ensure that the student has submissions for the given assignment
-        submissions = Submission.objects.filter(
-            student=student, 
-            question__assignment_id=assignment_id
-        )
+    #     # Ensure that the student has submissions for the given assignment
+    #     submissions = Submission.objects.filter(
+    #         student=student, 
+    #         question__assignment_id=assignment_id
+    #     )
 
-        if not submissions.exists():
-            return Response({"detail": "No submissions found for this assignment."}, status=status.HTTP_404_NOT_FOUND)
+    #     if not submissions.exists():
+    #         return Response({"detail": "No submissions found for this assignment."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Mark all submissions as final
-        submissions.update(is_final=True)
+    #     # Mark all submissions as final
+    #     submissions.update(is_final=True)
 
-        return Response({"detail": "Submission has been marked as final. No further changes allowed."}, status=status.HTTP_200_OK)
+    #     return Response({"detail": "Submission has been marked as final. No further changes allowed."}, status=status.HTTP_200_OK)
 
 
 class DashboardView(APIView):
@@ -302,15 +300,13 @@ class DashboardView(APIView):
             # Completed courses where all assignments are submitted
             completed_courses = Course.objects.filter(
                 enrollments__student=request.user,
-                assignments__questions__submissions__student=request.user,
-                assignments__questions__submissions__is_final=True
+                assignments__submissions__student=request.user,
             ).distinct()
 
 
             # Calculate average rating across all submitted assignments
             average_rating = Submission.objects.filter(
                 student=request.user,
-                is_final=True,
                 grade__isnull=False
             ).aggregate(Avg('grade'))['grade__avg']
 
