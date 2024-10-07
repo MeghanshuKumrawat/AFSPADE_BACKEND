@@ -39,6 +39,31 @@ class CourseViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     def get_queryset(self):
+        # Get the 'active' filter from query parameters
+        is_active = self.request.query_params.get('active', None)
+
+        # Filter for teachers (show only their own courses)
+        if self.request.user.is_teacher:
+            queryset = Course.objects.filter(teacher=self.request.user)
+
+        # Filter for students (show only courses matching their level and semester)
+        elif self.request.user.is_student:
+            queryset = Course.objects.filter(level=self.request.user.level, semester=self.request.user.semester)
+            # If a search query is provided, filter the results further
+            if self.request.query_params.get("search"):
+                query = self.request.query_params.get("search")
+                queryset = queryset.filter(Q(name__icontains=query) | Q(code__contains=query))
+
+        else:
+            queryset = Course.objects.none()
+
+        # Apply the 'active' filter if provided
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+
+        return queryset.distinct()
+
+    def get_queryset(self):
         # Filter to only return courses taught by the current teacher
         if self.request.user.is_teacher:
             return Course.objects.filter(teacher=self.request.user)
