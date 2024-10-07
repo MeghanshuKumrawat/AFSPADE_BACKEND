@@ -3,12 +3,17 @@ from .models import Course, Assignment, CourseEnrollment, Submission
 
 class CourseReadSerializer(serializers.ModelSerializer):
     teacher_name = serializers.CharField(source='teacher.username', read_only=True)
-    teacher_image = serializers.CharField(source='teacher.image', read_only=True)
+    teacher_image = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
         fields = ['id', 'code', 'name', 'description', 'level', 'semester', 'thumbnail', 'is_active', 'teacher_name', 'teacher_image']
-
+        
+    def get_teacher_image(self, obj):
+        if obj.teacher.image:
+            return obj.teacher.image.url  # This returns the relative path from the media folder
+        return None
+    
 class CourseWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
