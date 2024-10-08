@@ -102,7 +102,7 @@ class SubmissionReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Submission
-        fields = ['id', 'code_text', 'submitted_at', 'is_graded', 'grade', 'feedback']
+        fields = ['id', 'code_text', 'file', 'submitted_at', 'is_graded', 'grade', 'feedback']
 
 class SubmissionWriteSerializer(serializers.ModelSerializer):
     class Meta:
