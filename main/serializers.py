@@ -61,11 +61,18 @@ class CourseWriteSerializer(serializers.ModelSerializer):
 
 class AssignmentReadSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source='course.name', read_only=True)
-    # questions = QuestionReadSerializer(many=True, read_only=True)
+    submission = serializers.SerializerMethodField()
 
     class Meta:
         model = Assignment
-        fields = ['id', 'course', 'course_name', 'title', 'description', 'file', 'deadline', 'created_at']
+        fields = ['id', 'course', 'course_name', 'title', 'description', 'file', 'deadline', 'submission', 'created_at']
+
+    def get_submissions(self, obj):
+        if self.context['request'].user.is_student:
+            submissions = Submission.objects.filter(assignment=obj, student=self.context['request'].user)
+            if submissions.exists():
+                return submissions.first().id
+        return None
 
 class AssignmentWriteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -92,11 +99,10 @@ class CourseEnrollmentWriteSerializer(serializers.ModelSerializer):
         read_only_fields = ['student', 'enrolled_at', 'course']
 
 class SubmissionReadSerializer(serializers.ModelSerializer):
-    question_text = serializers.CharField(source='question.text', read_only=True)
 
     class Meta:
         model = Submission
-        fields = ['id', 'question_text', 'code_text', 'submitted_at', 'is_graded', 'grade', 'feedback']
+        fields = ['id', 'code_text', 'submitted_at', 'is_graded', 'grade', 'feedback']
 
 class SubmissionWriteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -114,7 +120,6 @@ class AssignmentWithSubmissionsSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'deadline', 'created_at', 'course_name', 'course_code', 'submissions']
 
     def get_submissions(self, obj):
-        # Get all submissions related to the assignment via the question relationship
         submissions = Submission.objects.filter(assignment=obj)
         return SubmissionReadSerializer(submissions, many=True).data
 
