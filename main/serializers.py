@@ -101,7 +101,7 @@ class SubmissionReadSerializer(serializers.ModelSerializer):
 class SubmissionWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Submission
-        fields = ['question', 'code_text', 'file']  # Exclude 'student', will be set in the view
+        fields = ['assignment', 'code_text', 'file']  # Exclude 'student', will be set in the view
         read_only_fields = ['submitted_at', 'is_graded', 'is_final', 'grade', 'feedback']
 
 class AssignmentWithSubmissionsSerializer(serializers.ModelSerializer):
