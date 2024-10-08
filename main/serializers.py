@@ -4,14 +4,20 @@ from .models import Course, Assignment, CourseEnrollment, Submission
 class CourseReadSerializer(serializers.ModelSerializer):
     teacher_name = serializers.CharField(source='teacher.username', read_only=True)
     teacher_image = serializers.SerializerMethodField()
+    is_enrolled = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
-        fields = ['id', 'code', 'name', 'description', 'level', 'semester', 'thumbnail', 'is_active', 'teacher_name', 'teacher_image']
+        fields = ['id', 'code', 'name', 'description', 'level', 'semester', 'thumbnail', 'is_active', 'is_enrolled', 'teacher_name', 'teacher_image']
         
     def get_teacher_image(self, obj):
         if obj.teacher.image:
             return obj.teacher.image.url  # This returns the relative path from the media folder
+        return None
+    
+    def get_is_enrolled(self, obj):
+        if self.context['request'].user.is_student:
+            return CourseEnrollment.objects.filter(course=obj, student=self.context['request'].user).exists()
         return None
     
 class CourseWriteSerializer(serializers.ModelSerializer):
