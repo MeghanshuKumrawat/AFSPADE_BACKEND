@@ -256,7 +256,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         
         # Optionally, prevent update after a certain period of time or after a deadline
         # Example: check assignment deadline or time of submission
-        if submission.submitted_at and submission.submitted_at > submission.question.assignment.deadline:
+        if submission.submitted_at and submission.submitted_at > submission.assignment.deadline:
             raise PermissionDenied("You cannot update a submission after the assignment deadline.")
 
         return super().update(request, *args, **kwargs)
