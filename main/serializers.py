@@ -67,7 +67,7 @@ class AssignmentReadSerializer(serializers.ModelSerializer):
         model = Assignment
         fields = ['id', 'course', 'course_name', 'title', 'description', 'file', 'deadline', 'submission', 'created_at']
 
-    def get_submissions(self, obj):
+    def get_submission(self, obj):
         if self.context['request'].user.is_student:
             submissions = Submission.objects.filter(assignment=obj, student=self.context['request'].user)
             if submissions.exists():
