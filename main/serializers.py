@@ -65,7 +65,7 @@ class AssignmentReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Assignment
-        fields = ['id', 'course', 'course_name', 'title', 'description', 'file', 'deadline', 'submission', 'created_at']
+        fields = ['id', 'course', 'course_name', 'title', 'description', 'file', 'deadline', 'language', 'submission', 'created_at']
 
     def get_submission(self, obj):
         if self.context['request'].user.is_student:
@@ -77,7 +77,7 @@ class AssignmentReadSerializer(serializers.ModelSerializer):
 class AssignmentWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assignment
-        fields = ['course', 'title', 'description', 'deadline', 'file']
+        fields = ['course', 'title', 'description', 'deadline', 'language', 'file']
 
         extra_kwargs = {
             'course': {'read_only': True}
