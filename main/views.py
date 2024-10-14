@@ -281,6 +281,10 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             assignments = Assignment.objects.filter(course__teacher=user).distinct()
         else:
             return Response({"detail": "Unauthorized access"}, status=status.HTTP_403_FORBIDDEN)
+        
+        course_id = self.request.query_params.get('course_id')
+        if course_id:
+            assignments = assignments.filter(course_id=course_id)
 
         # Serialize the assignments and their related submissions
         serializer = AssignmentWithSubmissionsSerializer(assignments, many=True)

@@ -99,10 +99,11 @@ class CourseEnrollmentWriteSerializer(serializers.ModelSerializer):
         read_only_fields = ['student', 'enrolled_at', 'course']
 
 class SubmissionReadSerializer(serializers.ModelSerializer):
-
+    student_id = serializers.CharField(source='student.id', read_only=True)
+    student_name = serializers.CharField(source='student.username', read_only=True)
     class Meta:
         model = Submission
-        fields = ['id', 'code_text', 'file', 'submitted_at', 'is_graded', 'grade', 'feedback']
+        fields = ['id', 'code_text', 'file', 'submitted_at', 'is_graded', 'grade', 'feedback', 'student_id', 'student_name']
 
 class SubmissionWriteSerializer(serializers.ModelSerializer):
     class Meta:
