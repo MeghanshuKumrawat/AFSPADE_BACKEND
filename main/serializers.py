@@ -113,7 +113,7 @@ class SubmissionWriteSerializer(serializers.ModelSerializer):
 class AssignmentWithSubmissionsSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source='course.name', read_only=True)
     course_code = serializers.CharField(source='course.code', read_only=True)
-    submission = serializers.SerializerMethodField()
+    submissions = serializers.SerializerMethodField()
 
     class Meta:
         model = Assignment
@@ -123,5 +123,3 @@ class AssignmentWithSubmissionsSerializer(serializers.ModelSerializer):
         submissions = Submission.objects.filter(assignment=obj)
         return SubmissionReadSerializer(submissions, many=True).data
 
-
-    submissions = serializers.SerializerMethodField()
