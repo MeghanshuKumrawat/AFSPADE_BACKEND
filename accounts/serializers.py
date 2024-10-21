@@ -29,7 +29,8 @@ class SignupSerializer(serializers.ModelSerializer):
             semester=validated_data.get('semester'),
             is_student=validated_data.get('is_student', False),
             is_teacher=validated_data.get('is_teacher', False),
-            image=validated_data.get('image', 'profiles/default.png')
+            image=validated_data.get('image', 'profiles/default.png'),
+            is_active=False
         )
         user.set_password(validated_data['password'])
         user.save()
