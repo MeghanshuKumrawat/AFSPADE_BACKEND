@@ -17,3 +17,5 @@ app.autodiscover_tasks(['main'])
 @app.task(bind=True)
 def debug_task(self):
     print('Request: {0!r}'.format(self.request))
+
+# celery -A AFSPADE_BACKEND worker --pool=solo -l info 

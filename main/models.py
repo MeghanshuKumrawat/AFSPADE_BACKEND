@@ -60,7 +60,7 @@ class Submission(models.Model):
     feedback = models.TextField(null=True, blank=True)  # Optional feedback for the submission
 
     def __str__(self):
-        return f"{self.student.username} - {self.question.text[:50]}"
+        return f"{self.student.username}"
 
 
 # class Feedback(models.Model):
