@@ -13,6 +13,8 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q, Avg
 from django.utils import timezone
 
+from main.tasks import grade_submission
+
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
@@ -236,8 +238,10 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         if Submission.objects.filter(assignment=serializer.validated_data['assignment'], student=self.request.user).exists():
             raise PermissionDenied("You have already submitted an answer for this question.")
         
-        # Save the submission with the current student
-        serializer.save(student=self.request.user)
+        submission = serializer.save(student=self.request.user)
+        
+        # Call the Celery task to grade the submission
+        grade_submission.delay(submission.id)
 
     def update(self, request, *args, **kwargs):
         # Retrieve the submission instance
