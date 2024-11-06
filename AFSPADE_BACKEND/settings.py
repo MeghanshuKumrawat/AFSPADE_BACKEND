@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-rnft5uek6_ve+zbj&137^@g25akl@mtcx@ning&!x5m16^t(a0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://afspade-backend.onrender.com', '*']
+ALLOWED_HOSTS = ['http://afspade-backend.onrender.com', 'localhost', '13.53.133.182']
 
 
 # Application definition
@@ -122,8 +122,12 @@ CORS_ALLOW_METHODS = [
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'afspade_db',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
