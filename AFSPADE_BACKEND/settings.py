@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-rnft5uek6_ve+zbj&137^@g25akl@mtcx@ning&!x5m16^t(a0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://afspade-backend.onrender.com', 'localhost', '13.53.133.182']
+ALLOWED_HOSTS = ['localhost', '13.53.133.182', 'nz-assignmnet.vercel.app']
 
 
 # Application definition
@@ -101,13 +101,15 @@ WSGI_APPLICATION = 'AFSPADE_BACKEND.wsgi.application'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3030',
     'http://localhost:3001',
+    'https://nz-assignmnet.vercel.app',
 ]
 
 CORS_ALLOW_HEADERS = ['*']
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3030',
-    'http://localhost:3001'
+    'http://localhost:3001',
+    'https://nz-assignmnet.vercel.app',
 ]
 CORS_ALLOW_METHODS = [
     "DELETE",
