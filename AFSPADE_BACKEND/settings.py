@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 from datetime import timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +30,7 @@ SECRET_KEY = 'django-insecure-rnft5uek6_ve+zbj&137^@g25akl@mtcx@ning&!x5m16^t(a0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '13.53.133.182', 'nz-assignmnet.vercel.app']
+ALLOWED_HOSTS = ['http://afspade-backend.onrender.com', 'localhost', '127.0.0.1', '13.53.133.182', 'https://nz-assignmnet-kdmnltrc0-pravinsliet123s-projects.vercel.app']
 
 
 # Application definition
@@ -122,14 +125,20 @@ CORS_ALLOW_METHODS = [
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'afspade_db',
+#         'USER': 'postgres',
+#         'PASSWORD': 'root',
+#         'HOST': 'localhost',
+#         'PORT': '',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'afspade_db',
-        'USER': 'postgres',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -171,6 +180,7 @@ USE_TZ = True
 # Set the URL for static files
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
+# STATIC_ROOT = "/home/ec2-user/Afspade_backend/static"
 
 
 MEDIA_URL = '/media/'
