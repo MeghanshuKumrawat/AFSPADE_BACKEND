@@ -22,5 +22,5 @@ def send_assignment_email(sender, instance, created, **kwargs):
             # Ensure student_emails is a list of valid email addresses
             if not isinstance(student_emails, list) or not student_emails:
                 raise ValueError("student_emails must be a non-empty list")
-            # Use Celery to send the email asynchronously
-            send_assignment_email_task.delay(subject, message, student_emails)
+            # Use  to send the email asynchronously
+            send_assignment_email_task(subject, message, student_emails)

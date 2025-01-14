@@ -240,8 +240,7 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         
         submission = serializer.save(student=self.request.user)
         
-        # Call the Celery task to grade the submission
-        grade_submission.delay(submission.id)
+        grade_submission(submission.id)
 
     def update(self, request, *args, **kwargs):
         # Retrieve the submission instance
