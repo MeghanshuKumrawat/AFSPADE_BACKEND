@@ -1,4 +1,3 @@
-from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -8,7 +7,6 @@ from main.models import Submission
 
 import traceback
 
-@shared_task
 def send_assignment_email_task(subject, message, recipient_list):
     # Validate recipient_list
     if not isinstance(recipient_list, list) or not recipient_list:
@@ -23,7 +21,6 @@ def send_assignment_email_task(subject, message, recipient_list):
     )
 
 
-@shared_task
 def grade_submission(submission_id):
     try:
         submission = Submission.objects.get(id=submission_id)

@@ -204,11 +204,3 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'aafspade@gmail.com'
 EMAIL_HOST_PASSWORD = 'vjsw nkwn gjaa fliv'
 
-# Celery Configuration Options
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # or RabbitMQ 'amqp://localhost'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-
-# DB = afspade_db
-# user root -> root

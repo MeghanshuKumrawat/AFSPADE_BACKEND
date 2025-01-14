@@ -1,11 +1,9 @@
 from openai import OpenAI
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
+
 
 # Set up your OpenAI API key
-client = OpenAI(api_key=os.environ.get("OPEN_AI_KEY"))
+client = OpenAI(api_key="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")
 
 def grade_assignment(assignment_question, student_code):
     # Construct the prompt
