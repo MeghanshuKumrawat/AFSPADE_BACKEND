@@ -1,28 +1,28 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "AFSPADE_BACKEND/wsgi.py",
-        "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" }
-      },
-      {
-        "src": "build_files.sh",
-        "use": "@vercel/static-build",
-        "config": {
-          "distDir": "static"
-        }
+  "version": 2,
+  "builds": [
+    {
+      "src": "AFSPADE_BACKEND/wsgi.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" }
+    },
+    {
+      "src": "build_files.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "static",
+        "buildCommand": "./build_files.sh"
       }
-    ],
-    "routes": [
-      {
-        "src": "/static/(.*)",
-        "dest": "/static/$1"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "AFSPADE_BACKEND/wsgi.py"
-      }
-    ],
-    "outputDirectory": "static"
-  }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "AFSPADE_BACKEND/wsgi.py"
+    }
+  ]
+}
