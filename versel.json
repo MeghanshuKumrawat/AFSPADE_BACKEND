@@ -1,5 +1,5 @@
 {
-    "version": 1,
+    "version": 2,
     "builds": [
       {
         "src": "AFSPADE_BACKEND/wsgi.py",
@@ -23,5 +23,6 @@
         "src": "/(.*)",
         "dest": "AFSPADE_BACKEND/wsgi.py"
       }
-    ]
+    ],
+    "outputDirectory": "static"
   }
