@@ -11,7 +11,7 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "static",
-        "buildCommand": "chmod +x build_files.sh && ./build_files.sh"
+        "buildCommand": "pip install -r requirements.txt && python3 manage.py migrate && python3 manage.py collectstatic --noinput"
       }
     }
   ],
