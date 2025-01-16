@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-rnft5uek6_ve+zbj&137^@g25akl@mtcx@ning&!x5m16^t(a0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://afspade-backend.onrender.com', 'localhost', '127.0.0.1', '13.53.133.182', 'https://nz-assignmnet-kdmnltrc0-pravinsliet123s-projects.vercel.app']
+ALLOWED_HOSTS = ['http://afspade-backend.onrender.com', 'localhost', '127.0.0.1', '13.53.133.182', 'https://nz-assignmnet-kdmnltrc0-pravinsliet123s-projects.vercel.app', ".vercel.app", ".now.sh"]
 
 
 # Application definition
@@ -125,22 +125,22 @@ CORS_ALLOW_METHODS = [
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'afspade_db',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'afspade_db',
+#         'USER': 'root',
+#         'PASSWORD': 'root',
+#         'HOST': 'localhost',
+#         'PORT': '',
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
