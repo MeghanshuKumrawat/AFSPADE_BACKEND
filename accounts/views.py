@@ -2,10 +2,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import GenericAPIView 
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.forms import SetPasswordForm
@@ -22,6 +22,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class LoginView(TokenObtainPairView):
+    permission_classes = [AllowAny]
     """
     Custom view to obtain JWT tokens upon successful login, including user role in the response.
     Checks if the user's email is verified before allowing login.
@@ -58,6 +59,7 @@ class LoginView(TokenObtainPairView):
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
                 
 class SignupView(GenericAPIView):
+    permission_classes = [AllowAny]
     serializer_class = SignupSerializer
 
     def post(self, request, *args, **kwargs):
@@ -126,6 +128,7 @@ class SignupView(GenericAPIView):
 
         
 class EmailVerificationView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, uidb64, token):
         try:
             # Decode the user ID
@@ -170,6 +173,7 @@ class UserView(APIView):
 User = get_user_model()
 
 class PasswordResetView(APIView):
+    permission_classes = [AllowAny]
 
     def validate_password_reset_link(self, request, uidb64, token):
         """
@@ -270,6 +274,7 @@ class PasswordResetView(APIView):
 
     
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def send_test_email(request):
     try:
         # Send the email

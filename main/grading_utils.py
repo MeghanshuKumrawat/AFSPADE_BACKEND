@@ -28,8 +28,8 @@ def grade_assignment(assignment_question, student_code):
         max_tokens=1500
     )
 
-    # Extract and return the response
-    feedback = response.choices[0].message.content
+    # # Extract and return the response
+    # feedback = response.choices[0].message.content
     return feedback
 
 

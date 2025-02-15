@@ -11,8 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-import os
-from datetime import timedelta
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -25,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-rnft5uek6_ve+zbj&137^@g25akl@mtcx@ning&!x5m16^t(a0'
+SECRET_KEY = 'django-insecure-foh6505p(g$fa78@byn!z%as_hrw^*#tv1zb^_!)w-wy)@fo8h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -45,35 +44,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-
     'accounts.apps.AccountsConfig',
-    'main.apps.MainConfig', 
+    'main.apps.MainConfig'
 ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
-}
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware', # CORS
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -102,6 +79,17 @@ TEMPLATES = [
 WSGI_APPLICATION = 'AFSPADE_BACKEND.wsgi.application'
 
 
+# Database
+# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3030',
     'http://localhost:3001',
@@ -115,34 +103,6 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3001',
     'https://nz-assignmnet.vercel.app',
 ]
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'afspade_db',
-#         'USER': 'root',
-#         'PASSWORD': 'root',
-#         'HOST': 'localhost',
-#         'PORT': '',
-#     }
-# }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -178,23 +138,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-# Set the URL for static files
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
-# STATIC_ROOT = "/home/ec2-user/Afspade_backend/static"
-
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-
+STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
 AUTH_USER_MODEL = 'accounts.User'
-AUTHENTICATION_BACKENDS = ['accounts.backends.EmailBackend']
+
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -204,4 +157,3 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'aafspade@gmail.com'
 EMAIL_HOST_PASSWORD = 'vjsw nkwn gjaa fliv'
-
