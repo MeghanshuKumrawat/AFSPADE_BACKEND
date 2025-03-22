@@ -40,7 +40,32 @@ class LoginView(TokenObtainPairView):
             
             # Check if the email is verified
             if not user.is_active:
-                return Response({'detail': 'Email is not verified. Please verify your email before logging in.'}, status=status.HTTP_403_FORBIDDEN)
+                # Generate token and encode UID
+                token = default_token_generator.make_token(user)
+                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+
+                # Build verification URL
+                verification_url = (
+                    request.data.get("frontend_url")
+                    + "/api/auth/verify-email/"
+                    + uidb64
+                    + "/"
+                    + token
+                )
+                print(verification_url)
+
+                # Send verification email
+                subject = "Verify your email address"
+                message = f"Please click the link below to verify your email address:\n{verification_url}"
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                    fail_silently=False,
+                )
+
+                return Response({'detail': 'Your email is not verified. Please check your inbox and verify your email before logging in.'}, status=status.HTTP_403_FORBIDDEN)
             
             # Verify the password
             if user.check_password(password):
@@ -97,34 +122,8 @@ class SignupView(GenericAPIView):
                                 status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            user = user.first()
-            # Generate token and encode UID
-            token = default_token_generator.make_token(user)
-            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-
-            # Build verification URL
-            verification_url = (
-                request.data.get("frontend_url")
-                + "/api/auth/verify-email/"
-                + uidb64
-                + "/"
-                + token
-            )
-            print(verification_url)
-
-            # Send verification email
-            subject = "Verify your email address"
-            message = f"Please click the link below to verify your email address:\n{verification_url}"
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-                fail_silently=False,
-            )
-
-            return Response({"detail": "Verification email sent"},
-                            status=status.HTTP_201_CREATED)
+            return Response({"detail": "The user is already registered. Please try logging in or use the 'Forgot Password' option to reset your password."},
+                            status=status.HTTP_401_UNAUTHORIZED)
 
         
 class EmailVerificationView(APIView):

@@ -16,7 +16,7 @@ from django.utils import timezone
 from main.tasks import grade_submission
 
 class CourseViewSet(viewsets.ModelViewSet):
-    queryset = Course.objects.all()
+    queryset = Course.objects.all().order_by('id')
     permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
     pagination_class = PageNumberPagination
 
