@@ -1,9 +1,9 @@
 from openai import OpenAI
-
+import json
 
 
 # Set up your OpenAI API key
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="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")
 
 def grade_assignment(assignment_question, student_code):
     # Construct the prompt
@@ -13,8 +13,19 @@ def grade_assignment(assignment_question, student_code):
         "Your role is to grade the student's submission based on correctness, efficiency, "
         "code structure, and the approach taken to solve the problem. "
         "Provide constructive and detailed feedback, highlighting what the student did well, "
-        "any mistakes or inefficiencies in the code, and how they could improve their approach."
+        "any mistakes or inefficiencies in the code, and how they could improve their approach. "
+        "Give your response in JSON format with two keys: 'feedback' containing your detailed review, "
+        "and 'grade' representing the overall grade for the submission out of 100. "
+        "\n\n"
+        "IMPORTANT INSTRUCTIONS:\n"
+        "- Do not include any text before or after the JSON output. Only return the JSON object.\n"
+        "- The 'feedback' key should contain a full explanation without starting with phrases like "
+        "'The code shows...' or 'The solution shows...'. Just begin with the relevant points.\n"
+        "- Do not make assumptions or speculate. Only grade based on what is present in the code.\n"
+        "- Make sure the JSON is syntactically correct, and avoid trailing commas or unquoted keys.\n"
+        "- The 'grade' should be a numeric value between 0 and 100."
     )
+
 
     # Send the request to the OpenAI API
     response = client.chat.completions.create(
@@ -29,7 +40,8 @@ def grade_assignment(assignment_question, student_code):
     )
 
     # # Extract and return the response
-    # feedback = response.choices[0].message.content
+    feedback = json.loads(response.choices[0].message.content.strip())
+    print(feedback)
     return feedback
 
 
@@ -51,4 +63,5 @@ if __name__ == "__main__":
     """
     # Get feedback
     feedback = grade_assignment(assignment_question, student_code)
-    print("Grading Feedback:\n", feedback)
+    print("Grading Feedback:\n", feedback['feedback'])
+    print("Grading:\n", feedback['grade'])

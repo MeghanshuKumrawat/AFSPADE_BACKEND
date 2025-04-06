@@ -73,7 +73,8 @@ def grade_submission(submission_id):
 
         # Save feedback and grading result
         submission.is_graded = True
-        submission.feedback = feedback
+        submission.feedback = feedback.get('feedback')
+        submission.grade = feedback.get('grade')
         submission.save()
 
         # Send an email notification to the student
