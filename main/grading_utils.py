@@ -3,7 +3,7 @@ import json
 
 
 # Set up your OpenAI API key
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="")
 
 def grade_assignment(assignment_question, student_code):
     # Construct the prompt
